@@ -1,9 +1,10 @@
+
 from flask import Blueprint
 
 main = Blueprint('main', __name__)
 
 import json
-from engine import YelpRecommenderEngine
+from engine import /home/iimtiaz/Downloads/ubuntu-17.10-desktop-amd64.iso
 
 import logging
 
@@ -20,9 +21,10 @@ def get_categories():
     return json.dumps(all_categories)
 
 
-def create_app(spark_context):
-    global recommendation_engine
-    recommendation_engine = YelpRecommenderEngine({'spark_context': spark_context})
+def create_app(spark_context, dataset_path):
+    global recommendation_engine 
+
+    recommendation_engine = yelp_engine
     app = Flask(__name__)
     app.register_blueprint(main)
     return app
