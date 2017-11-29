@@ -17,6 +17,6 @@ class YelpRecommenderEngine(SparkBase):
         return self.df_for(CASSANDRA_KEY_SPACE, CATEGORIES)
 
 
-yelp_engine = YelpRecommenderEngine()
+
 
 

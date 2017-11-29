@@ -1,6 +1,7 @@
 import time, sys, cherrypy, os
 from paste.translogger import TransLogger
 from app import create_app
+from yelp_spark.settings import CASSANDRA_SERVERS
 from pyspark import SparkContext, SparkConf
 
 

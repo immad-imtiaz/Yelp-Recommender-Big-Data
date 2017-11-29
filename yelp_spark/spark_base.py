@@ -10,6 +10,7 @@ import json
 class SparkBase(object):
 
     INPUT_DIRECTORY = DATA_SET_INPUT_DIRECTORY
+
     spark = None
     sql_ctx = None
     types = types
@@ -19,14 +20,15 @@ class SparkBase(object):
             .set('spark.cassandra.connection.host', ','.join(CASSANDRA_SERVERS)) \
             .set('spark.dynamicAllocation.maxExecutors', 20)
         self.conf.setMaster('local[*]')
-	if 'spark_context' in kwargs:
+
+        if 'spark_context' in kwargs:
             self.spark = kwargs['spark_context']
             # self.spark.addPyFile('yelp_spark/cassandra_driver-3.12.0-py2.7-linux-x86_64.egg')
             # self.spark.addPyFile('yelp_spark/futures-3.1.1-py2.7.egg')
-	else:
-	    self.spark = SparkContext(conf=self.conf) 
+        else:
+            self.spark = SparkContext(conf=self.conf) 
         self.sql_ctx = SQLContext(self.spark)
-        
+
     def load_json_file(self, file):
         file_rdd = self.spark.textFile(file)
         return file_rdd.map(json.loads)
@@ -45,3 +47,6 @@ class SparkBase(object):
             .mode('append') \
             .options(table=table, keyspace=CASSANDRA_KEY_SPACE) \
             .save()
+
+
+
