@@ -2,3 +2,5 @@ dataset/*
 _yelp_recommender/
 *.pyc
 .idea/
+*.py.save
+.egg

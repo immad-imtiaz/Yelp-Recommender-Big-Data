@@ -1,0 +1,21 @@
+
+# TABLE_NAMES
+BUSINESS_CATEGORIES_TABLE = 'business_categories'
+BUSINESS_SIMILARITY = 'business_similarity'
+BUSINESS_TIME_CHECK_INS = 'business_time_check_in'
+BUSINESS_DAY_CHECK_INS = 'business_day_check_in'
+CATEGORIES = 'categories'
+YELP_USERS = 'yelp_users'
+NAMES_GENDER = 'name_gender'
+
+
+# Number of workers
+WORKERS = 4
+
+#HDFS INPUT DIRECTORY
+DATA_SET_INPUT_DIRECTORY = 'yelp/dataset/'
+
+# Cassandra Config
+CASSANDRA_SERVERS = ['199.60.17.171', '199.60.17.188']
+CASSANDRA_KEY_SPACE = 'yelp_recommender'
+
