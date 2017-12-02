@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="main_container col-lg-12" style="background-image: url({{ url_for('static', filename='banner.jpg') }})">
+        <div class="cop-lg-6 input-form-container">
+            <h1 class="helper-text">Yelp New Business Helper</h1>
+            <form onsubmit="getReport()">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Select Business Categories</label>
+                    <input id="categories" placeholder="Select your business categories"
+                           type="text form-control" data-role="tagsinput" />
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Select Location for your new business</label>
+                    <input id="autocomplete" class="form-control" placeholder="Enter your address"
+                           onFocus="geolocate()" type="text"/>
+
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Kilometers to analyze</label>
+                    <div class="col-lg-12 form-control" style="background: transparent; border: none">
+                        <div class="col-lg-10">
+                            <input type="range" min="2" max="20" step="1">
+                        </div>
+                        <div class="col-lg-2">
+                            <output></output>
+                        </div>
+                    </div>
+                </div>
+
+                </br>
+                </br>
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Get Report</button>
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block extraScript %}
+    <script>
+        var $document = $(document);
+        var placeSearchKM = 5;
+        var allCategories = [];
+        var autocomplete;
+        var textContent = ('textContent' in document) ? 'textContent' : 'innerText';
+        var selector = '[data-rangeslider]';
+        var $element = $(selector);
+
+        var categories = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('category'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: {
+                url: location.origin+'/categories/food',
+                filter: function(list) {
+                    var all_cat =  list['categories'];
+                    return $.map(all_cat, function(cat) {
+                        return { category: cat };
+                    });
+                },
+                cache:true
+            },
+            remote:{
+                url: location.origin+'/categories/%QUERY',
+                wildcard: '%QUERY',
+                transform: function(all){
+                    var all_cat =  all['categories'];
+                    return all_cat
+                }
+            }
+        });
+        categories.initialize();
+
+        $('#categories').tagsinput({
+            typeaheadjs: {
+                name: 'categories',
+                displayKey: 'category',
+                valueKey: 'category',
+                minLength: 3,
+                limit: 10,
+                highlight: true,
+                source: categories.ttAdapter()
+
+            }
+        });
+
+
+        $('#categories').on('itemAdded', function(event) {
+            allCategories
+            // event.item: contains the item
+            allCategories = $("#categories").val()
+        });
+
+        $('#categories').on('itemRemoved', function(event) {
+            // event.item: contains the item
+            allCategories = $("#categories").val()
+        });
+
+        // Example functionality to demonstrate a value feedback
+        function valueOutput(element) {
+            var value = element.value;
+            var output = element.parentNode.getElementsByTagName('output')[0] || element.parentNode.parentNode
+                            .getElementsByTagName('output')[0];
+            output[textContent] = value + ' Kms';
+            placeSearchKM = value;
+        }
+        $document.on('input', 'input[type="range"], ' + selector, function(e) {
+            valueOutput(e.target);
+        });
+
+        $('input[type="range"]').rangeslider({
+            handleClass: 'rangeslider__handle',
+            polyfill: false,
+
+            // Callback function
+            onInit: function() {
+                var output = document.getElementsByTagName('output')[0] || element.parentNode.parentNode
+                                .getElementsByTagName('output')[0];
+                output[textContent] = placeSearchKM + ' Kms';
+            },
+
+            // Callback function
+            onSlide: function(position, value) {},
+
+            // Callback function
+            onSlideEnd: function(position, value) {
+                console.log(position, value);
+                placeSearchKM = value;
+            }
+        });
+
+        var vicinity = {
+            'lat': null,
+            'lng': null
+        };
+
+        function fillInAddress() {
+            // Get the place details from the autocomplete object.
+            var place = autocomplete.getPlace();
+            vicinity['lat'] = place.geometry.location.lat();
+            vicinity['lng'] = place.geometry.location.lng();
+            console.log(vicinity);
+        }
+
+
+        function initAutocomplete() {
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            autocomplete = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+                    {types: ['geocode']});
+
+            // When the user selects an address from the dropdown, populate the address
+            // fields in the form.
+            autocomplete.addListener('place_changed', fillInAddress);
+        }
+
+        function geolocate() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var geolocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    var circle = new google.maps.Circle({
+                        center: geolocation,
+                        radius: position.coords.accuracy
+                    });
+                    autocomplete.setBounds(circle.getBounds());
+                });
+            }
+        }
+
+        function getReport(){
+            console.log(placeSearchKM, vicinity, allCategories);
+            $.post(location.origin+'/report/', {
+                        kmRange: placeSearchKM,
+                        vicinity: vicinity,
+                        categories: allCategories
+                    });
+        }
+
+    </script>
+
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmM9qnQsguJ4c9Rxi2mxRJTAbly7Oo_94&libraries=places&callback=initAutocomplete"></script>
+{% endblock %}

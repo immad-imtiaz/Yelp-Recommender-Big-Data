@@ -3,7 +3,10 @@ from pyspark.sql.functions import udf
 import uuid
 from pyspark.sql import SQLContext, types
 from pyspark.sql.types import *
-from .settings import CASSANDRA_SERVERS, DATA_SET_INPUT_DIRECTORY, CASSANDRA_KEY_SPACE, WORKERS
+try:
+    from settings import CASSANDRA_SERVERS, DATA_SET_INPUT_DIRECTORY, CASSANDRA_KEY_SPACE, WORKERS
+except ImportError:
+    from .settings import CASSANDRA_SERVERS, DATA_SET_INPUT_DIRECTORY, CASSANDRA_KEY_SPACE, WORKERS
 import json
 
 
@@ -19,14 +22,14 @@ class SparkBase(object):
         self.conf = SparkConf().setAppName('Yelp Recommendation') \
             .set('spark.cassandra.connection.host', ','.join(CASSANDRA_SERVERS)) \
             .set('spark.dynamicAllocation.maxExecutors', 20)
-	self.conf.setMaster('local[*]')
-	print(kwargs)
-        if 'spark_context' in kwargs:
-            self.spark = kwargs['spark_context']
+        self.conf.setMaster('local[*]')
+        try:
+            self.spark = args[0]['spark_context']
             # self.spark.addPyFile('yelp_spark/cassandra_driver-3.12.0-py2.7-linux-x86_64.egg')
             # self.spark.addPyFile('yelp_spark/futures-3.1.1-py2.7.egg')
-        else:
-            self.spark = SparkContext(conf=self.conf) 
+        except IndexError:
+            self.spark = SparkContext(conf=self.conf)
+            self.spark.setLogLevel("ERROR")
         self.sql_ctx = SQLContext(self.spark)
 
     def load_json_file(self, file):

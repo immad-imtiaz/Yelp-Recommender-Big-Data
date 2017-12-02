@@ -11,6 +11,7 @@ def init_spark_context():
             .set('spark.dynamicAllocation.maxExecutors', 20)
     conf.setMaster('local[*]')
     spark = SparkContext(conf=conf, pyFiles=['engine.py', 'app.py'])
+    spark.setLogLevel("ERROR")
     return spark
 
 

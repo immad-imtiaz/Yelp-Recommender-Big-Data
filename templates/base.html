@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/base.css') }}">
+    <link rel= "stylesheet" type= "text/css"
+          href= "{{ url_for('bower.static',filename='bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel= "stylesheet" type= "text/css"
+          href= "{{ url_for('bower.static',filename='bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css') }}">
+    <link rel= "stylesheet" type= "text/css"
+          href= "{{ url_for('bower.static',filename='rangeslider.js/dist/rangeslider.css') }}">
+
+
+    {% if title %}
+    <title>{{ title }} - microblog</title>
+    {% else %}
+    <title>Welcome to Yelp Recommend</title>
+    {% endif %}
+  </head>
+  <body>
+    {% block content %}
+    {% endblock %}
+  </body>
+
+  <script src="{{ url_for('bower.static', filename='jquery/dist/jquery.js') }}"></script>
+  <script src="{{ url_for('bower.static', filename='bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
+  <script src="{{ url_for('bower.static', filename='rangeslider.js/dist/rangeslider.min.js') }}"></script>
+  <script src="{{ url_for('bower.static', filename='typeahead.js/dist/typeahead.jquery.min.js') }}"></script>
+  <script src="{{ url_for('bower.static', filename='typeahead.js/dist/typeahead.bundle.min.js') }}"></script>
+  <script src="{{ url_for('bower.static', filename='typeahead.js/dist/bloodhound.min.js') }}"></script>
+
+
+  {% block extraScript %}
+  {% endblock %}
+
+</html>

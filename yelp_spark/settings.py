@@ -7,15 +7,16 @@ BUSINESS_DAY_CHECK_INS = 'business_day_check_in'
 CATEGORIES = 'categories'
 YELP_USERS = 'yelp_users'
 NAMES_GENDER = 'name_gender'
+BUSINESS_CITY = 'business_info_table'
 
 
 # Number of workers
 WORKERS = 4
 
 #HDFS INPUT DIRECTORY
-DATA_SET_INPUT_DIRECTORY = 'yelp/dataset/'
+DATA_SET_INPUT_DIRECTORY = 'dataset/'
 
 # Cassandra Config
-CASSANDRA_SERVERS = ['199.60.17.171', '199.60.17.188']
+CASSANDRA_SERVERS = ['127.0.0.1']
 CASSANDRA_KEY_SPACE = 'yelp_recommender'
 

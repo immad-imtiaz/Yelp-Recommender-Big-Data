@@ -8,7 +8,8 @@ from yelp_spark.settings import CASSANDRA_SERVERS, \
     BUSINESS_DAY_CHECK_INS, \
     CATEGORIES,\
     YELP_USERS,\
-    NAMES_GENDER
+    NAMES_GENDER, \
+    BUSINESS_CITY
 
 
 
@@ -79,6 +80,26 @@ class CassandraCreator(object):
 
     """
 
+    BUSINESS_CITY = """
+                    CREATE TABLE IF NOT EXISTS %s(
+                    business_id TEXT,
+                    city TEXT,
+                    state TEXT,
+                    latitude FLOAT,
+                    longitude FLOAT,
+                    stars FLOAT,
+                    review_count INT,
+                    name TEXT,
+                    neighborhood TEXT,
+                    postal_code TEXT,
+                    address TEXT,
+                    is_open INT,
+                    PRIMARY KEY(business_id, city, state)
+                    )
+    """
+
+
+
 
     @classmethod
     def create_key_space(cls):
@@ -93,4 +114,5 @@ class CassandraCreator(object):
         session.execute(cls.CATEGORIES_TABLE % CATEGORIES)
         session.execute(cls.YELP_USER_TABLE % YELP_USERS)
         session.execute(cls.NAME_GENDER % NAMES_GENDER)
+        session.execute(cls.BUSINESS_CITY % BUSINESS_CITY)
 

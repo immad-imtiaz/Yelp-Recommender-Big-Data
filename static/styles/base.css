@@ -1,0 +1,114 @@
+body {
+    height: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    border: 0;
+}
+
+.main_container{
+    height: 100%;
+}
+
+.input-form-container{
+    margin-top: 15%;
+    background: rgba(15, 15, 15, 0.53);
+    border-radius: 5px;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-top: 25px;
+    padding-bottom: 10px;
+}
+
+output {
+        font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: #428bca;
+    position: absolute;
+    top: -15px;
+}
+
+.rangeslider__fill {
+    background: rgba(7, 15, 22, 0.75) !important;
+}
+
+
+.bootstrap-tagsinput {
+    width: 100%;
+}
+
+.accordion {
+    margin-bottom:-3px;
+}
+
+.helper-text{
+    color: #ffffff;
+}
+
+.accordion-group {
+    border: none;
+}
+
+.twitter-typeahead .tt-query,
+.twitter-typeahead .tt-hint {
+    margin-bottom: 0;
+}
+
+.twitter-typeahead .tt-hint
+{
+    display: none;
+}
+
+.tt-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    list-style: none;
+    font-size: 14px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-clip: padding-box;
+    cursor: pointer;
+}
+
+.tt-suggestion {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.428571429;
+    color: #333333;
+    white-space: nowrap;
+}
+
+.tt-suggestion:hover,
+.tt-suggestion:focus {
+    color: #ffffff;
+    text-decoration: none;
+    outline: 0;
+    background-color: #428bca;
+}
+
+#locationField, #controls {
+    position: relative;
+    width: 480px;
+}
+#autocomplete {
+    width: 100%;
+}
+label {
+    color: #428bca;
+}
