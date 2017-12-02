@@ -34,7 +34,7 @@ class YelpBusinessCheckIn(SparkBase):
         self.save_data_frame_to_cassandra(check_in_df, BUSINESS_TIME_CHECK_INS)
 
     def transfer_check_in_by_day(self):
-        self.df_for(BUSINESS_TIME_CHECK_INS)
+        self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_TIME_CHECK_INS)
         day_check_in_df = self.sql_ctx.sql("""SELECT business_id, day_of_week,
                                             SUM(check_in) FROM %s GROUP BY
                                             business_id, day_of_week""" % BUSINESS_TIME_CHECK_INS)
@@ -42,5 +42,5 @@ class YelpBusinessCheckIn(SparkBase):
         self.save_data_frame_to_cassandra(day_check_in_df, BUSINESS_DAY_CHECK_INS)
 
 ybci = YelpBusinessCheckIn()
-#ybci.transfer_check_ins_by_hour()
+# ybci.transfer_check_ins_by_hour()
 ybci.transfer_check_in_by_day()

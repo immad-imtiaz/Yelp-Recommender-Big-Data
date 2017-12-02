@@ -37,8 +37,12 @@ def get_cities():
 @main.route("/report/", methods=["POST"])
 def get_report():
     print('----------Data-----------')
-    print(request.data)
-    print(request.form)
+    data = request.form.to_dict()
+    lng = data['vicinity[lng]']
+    lat = data['vicinity[lat]']
+    kms = data['kmRange']
+    categories = data['categories'].split(',')
+    report = recommendation_engine.get_business_report(categories, lng, lat, kms)
     print('----------Data-----------')
     return render_template('report.html')
 
