@@ -22,7 +22,7 @@ class CassandraCreator(object):
     KEY_SPACE_QUERY = """
                         CREATE KEYSPACE IF NOT EXISTS %s
                         WITH replication = {'class': 'SimpleStrategy',
-                        'replication_factor' : 1}
+                        'replication_factor' : 2}
     """
 
     BUSINESS_CATEGORY_TABLE_CQL = """
