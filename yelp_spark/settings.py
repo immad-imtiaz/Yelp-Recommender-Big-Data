@@ -23,5 +23,51 @@ DATA_SET_INPUT_DIRECTORY = 'dataset/'
 CASSANDRA_SERVERS = ['127.0.0.1']
 CASSANDRA_KEY_SPACE = 'yelp_recommender'
 
+
+# #HDFS INPUT DIRECTORY
+# DATA_SET_INPUT_DIRECTORY = 'yelp/dataset/'
+#
+# # Cassandra Config
+# CASSANDRA_SERVERS = ['199.60.17.171', '199.60.17.188']
+# CASSANDRA_KEY_SPACE = 'yelp_recommender'
+
+
 JACCARD_SIMILARITY_THRESHOLD = 0.5
+
+
+COLORS = [
+    "#FF0F00",
+    "#FF6600",
+    "#FF9E01",
+    "#FCD202",
+    "#B0DE09",
+    "#04D215",
+    "#0D8ECF",
+    "0D52D1",
+    "#2A0CD0",
+    "#8A0CCF",
+    "#CD0D74",
+    "#FF0F00",
+    "#FF6600",
+    "#FF9E01",
+    "#FCD202",
+    "#B0DE09",
+    "#04D215",
+    "#0D8ECF",
+    "0D52D1",
+    "#2A0CD0",
+    "#8A0CCF",
+    "#CD0D74",
+    "#FF0F00",
+    "#FF6600",
+    "#FF9E01",
+    "#FCD202",
+    "#B0DE09",
+    "#04D215",
+    "#0D8ECF",
+    "0D52D1",
+    "#2A0CD0",
+    "#8A0CCF",
+    "#CD0D74",
+]
 
