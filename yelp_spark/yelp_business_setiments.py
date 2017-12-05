@@ -166,7 +166,7 @@ class YelpBusinessSentiments(SparkBase):
 
 
 ys = YelpBusinessSentiments()
-# ys.save_sentiments_words(positive=True)
-# ys.save_sentiments_words(positive=False)
-# ys.save_other_sentiment_words()
+ys.save_sentiments_words(positive=True)
+ys.save_sentiments_words(positive=False)
+ys.save_other_sentiment_words()
 ys.save_business_sentiment()
