@@ -1,7 +1,8 @@
 from flask import Blueprint, request
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_bower import Bower
+
 
 main = Blueprint('main', __name__)
 
@@ -34,17 +35,27 @@ def get_cities():
     return jsonify(cities=all_cities)
 
 
-@main.route("/report/", methods=["POST"])
+@main.route("/report/", methods=["POST", "GET"])
 def get_report():
-    print('----------Data-----------')
     data = request.form.to_dict()
-    lng = data['vicinity[lng]']
-    lat = data['vicinity[lat]']
-    kms = data['kmRange']
+    lng = data['lng']
+    lat = data['lat']
+    kms = data['kms']
     categories = data['categories'].split(',')
-    report = recommendation_engine.get_business_report(categories, lng, lat, kms)
-    print('----------Data-----------')
-    return render_template('report.html')
+    day_script, day_div, hour_script, hour_div = recommendation_engine.get_business_report(categories, lng, lat, kms)
+    return render_template('report.html',
+                           day_script=day_script,
+                           day_div=day_div,
+                           hour_script=hour_script,
+                           hour_div=hour_div,
+                           title='New Business Report')
+
+
+@main.route("/completeReport/")
+def get_complete_report():
+    print(request.args)
+
+    return render_template('report2.html')
 
 
 @main.route('/')

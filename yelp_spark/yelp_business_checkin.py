@@ -42,5 +42,5 @@ class YelpBusinessCheckIn(SparkBase):
         self.save_data_frame_to_cassandra(day_check_in_df, BUSINESS_DAY_CHECK_INS)
 
 ybci = YelpBusinessCheckIn()
-# ybci.transfer_check_ins_by_hour()
+ybci.transfer_check_ins_by_hour()
 ybci.transfer_check_in_by_day()

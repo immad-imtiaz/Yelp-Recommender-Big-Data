@@ -10,10 +10,11 @@ body {
 
 .main_container{
     height: 100%;
+    text-align: center;
 }
 
 .input-form-container{
-    margin-top: 15%;
+    margin-top: 8%;
     background: rgba(15, 15, 15, 0.53);
     border-radius: 5px;
     padding-left: 20%;
@@ -111,4 +112,25 @@ output {
 }
 label {
     color: #428bca;
+}
+
+.report{
+    text-align: center;
+    padding-top: 80px;
+}
+
+.report-info-box{
+    padding: 20px 20px 20px 20px;
+    box-shadow: #0f0f0f;
+    background: rgba(60, 60, 60, 0.63);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 80%;
+    margin-left: 10%;
+}
+
+.report-info-box .heading{
+    text-align: center;
+    color: #ffffff;
+    font-size: 16px;
 }

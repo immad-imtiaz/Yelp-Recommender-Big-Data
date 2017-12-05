@@ -8,6 +8,8 @@ CATEGORIES = 'categories'
 YELP_USERS = 'yelp_users'
 NAMES_GENDER = 'name_gender'
 BUSINESS_CITY = 'business_info_table'
+BUSINESS_SENTIMENTS = 'business_sentiments'
+
 
 
 # Number of workers
@@ -19,4 +21,6 @@ DATA_SET_INPUT_DIRECTORY = 'dataset/'
 # Cassandra Config
 CASSANDRA_SERVERS = ['127.0.0.1']
 CASSANDRA_KEY_SPACE = 'yelp_recommender'
+
+JACCARD_SIMILARITY_THRESHOLD = 0.5
 

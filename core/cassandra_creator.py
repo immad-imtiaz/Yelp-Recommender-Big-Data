@@ -9,7 +9,9 @@ from yelp_spark.settings import CASSANDRA_SERVERS, \
     CATEGORIES,\
     YELP_USERS,\
     NAMES_GENDER, \
-    BUSINESS_CITY
+    BUSINESS_CITY, \
+    BUSINESS_SENTIMENTS
+
 
 
 
@@ -98,6 +100,16 @@ class CassandraCreator(object):
                     )
     """
 
+    BUSINESS_SENTIMENTS_TABLE = """
+                    CREATE TABLE IF NOT EXISTS %s (
+                      business_id TEXT,
+                      tip LIST<text>,
+                      avg_sentiments FLOAT,
+                      PRIMARY KEY(business_id)
+                    )
+
+    """
+
 
 
 
@@ -115,4 +127,5 @@ class CassandraCreator(object):
         session.execute(cls.YELP_USER_TABLE % YELP_USERS)
         session.execute(cls.NAME_GENDER % NAMES_GENDER)
         session.execute(cls.BUSINESS_CITY % BUSINESS_CITY)
+        session.execute(cls.BUSINESS_SENTIMENTS_TABLE %BUSINESS_SENTIMENTS)
 

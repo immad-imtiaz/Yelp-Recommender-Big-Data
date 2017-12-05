@@ -42,3 +42,6 @@ if __name__ == "__main__":
     app = create_app(sc)
     # start web server
     run_server(app)
+
+
+# spark-submit --packages anguenot:pyspark-cassandra:0.6.0 server.py

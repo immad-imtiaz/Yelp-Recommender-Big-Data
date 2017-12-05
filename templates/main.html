@@ -3,23 +3,29 @@
     <div class="main_container col-lg-12" style="background-image: url({{ url_for('static', filename='banner.jpg') }})">
         <div class="cop-lg-6 input-form-container">
             <h1 class="helper-text">Yelp New Business Helper</h1>
-            <form onsubmit="getReport()">
+            <form action="{{ url_for('main.get_report') }}" method="post">
                 <div class="form-group">
                     <label for="exampleInputEmail1">Select Business Categories</label>
-                    <input id="categories" placeholder="Select your business categories"
+                    <input id="categories" name="categories" placeholder="Select your business categories"
                            type="text form-control" data-role="tagsinput" />
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Select Location for your new business</label>
-                    <input id="autocomplete" class="form-control" placeholder="Enter your address"
+                    <input id="autocomplete"  class="form-control" placeholder="Enter your address"
                            onFocus="geolocate()" type="text"/>
+                    <input id="lat"  name="lat" class="hidden"
+                            type="text"/>
+                    <input id="lng" name="lng"  class="hidden"
+                            type="text"/>
 
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Kilometers to analyze</label>
                     <div class="col-lg-12 form-control" style="background: transparent; border: none">
                         <div class="col-lg-10">
-                            <input type="range" min="2" max="20" step="1">
+                            <input type="range" id="kms" name="kms" min="2" max="20" step="1">
+                            <input id="range" name="range"  class="hidden"
+                            type="text"/>
                         </div>
                         <div class="col-lg-2">
                             <output></output>
@@ -45,6 +51,8 @@
     <script>
         var $document = $(document);
         var placeSearchKM = 5;
+        $('#range').val(placeSearchKM);
+        $('#kms').val(placeSearchKM);
         var allCategories = [];
         var autocomplete;
         var textContent = ('textContent' in document) ? 'textContent' : 'innerText';
@@ -107,6 +115,7 @@
                             .getElementsByTagName('output')[0];
             output[textContent] = value + ' Kms';
             placeSearchKM = value;
+            $('#range').val(value);
         }
         $document.on('input', 'input[type="range"], ' + selector, function(e) {
             valueOutput(e.target);
@@ -141,9 +150,8 @@
         function fillInAddress() {
             // Get the place details from the autocomplete object.
             var place = autocomplete.getPlace();
-            vicinity['lat'] = place.geometry.location.lat();
-            vicinity['lng'] = place.geometry.location.lng();
-            console.log(vicinity);
+            $('#lat').val(place.geometry.location.lat());
+            $('#lng').val(place.geometry.location.lng());
         }
 
 
