@@ -7,6 +7,7 @@ from bokeh.models import (HoverTool, FactorRange, Plot, LinearAxis, Grid,
 from bokeh.models.glyphs import VBar
 from bokeh.plotting import figure
 from bokeh.charts import Bar
+
 from bokeh.palettes import Spectral6
 from bokeh.embed import components
 from bokeh.models.sources import ColumnDataSource
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 class YelpRecommenderEngine(SparkBase):
 
     BUSINESS_RADIUS_SQL = """
-        SELECT latitude, longitude, city, business_id,
+        SELECT latitude, longitude, city, business_id, name, stars, review_count,
         (6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * cos(radians(longitude)
         - radians(%s)) + sin(radians(%s)) * sin(radians(latitude )))) AS distance
         FROM %s
@@ -35,11 +36,15 @@ class YelpRecommenderEngine(SparkBase):
 
     def get_business_report(self, categories, lon, lat, kms):
         all_business_in_range = self._get_business_with_in_radius(categories, lon, lat, kms)
+        all_business_in_range_map = all_business_in_range.select('name', 'business_id', 'distance',
+                                                                 'latitude', 'longitude', 'stars', 'review_count')
         all_business_ids = all_business_in_range.select('business_id')
         all_business_ids.cache()
         day_script, day_div = self._get_day_wise_check_in_report(all_business_ids)
         hour_script, hour_div = self._get_hourly_check_in_report(all_business_ids)
-        return day_script, day_div, hour_script, hour_div
+        top_5_competitors = all_business_in_range_map.orderBy("stars", ascending=False).collect()
+        all_business_in_range_map = all_business_in_range_map.collect()
+        return day_script, day_div, hour_script, hour_div, all_business_in_range_map, top_5_competitors
 
     def _get_business_with_in_radius(self, categories, lon, lat, kms):
         self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_CITY)
@@ -136,12 +141,10 @@ class YelpRecommenderEngine(SparkBase):
             .reduce(transform2)
 
         graph_data = {
-            'hour': df_check_in[1][0],
+            'hour': df_check_in[1][0] if (df_check_in[1][0] != 0) else 24,
             'check_in': df_check_in[1][1],
             'color': Spectral6
         }
-
-        print(graph_data)
 
         plot = self._create_bar_chart(graph_data, 'Competitors Hour Wise Check Ins', 'hour',
                                       'check_in', 'Daily Hours', 'Average Check Ins')

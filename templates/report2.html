@@ -7,9 +7,27 @@
             </div>
             <div class="col-lg-12 report-info-box">
                 <div class="heading">Top Five Competitors</div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Business Name</th>
+                        <th>Distance (kms)</th>
+                        <th>Reviews</th>
+                        <th>Ratings</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Doe</td>
+                        <td>john@example.com
+                        <td>john@example.com</td>
+                    </tr>
+                    </tbody>
+                </table>
 
             </div>
-             <div class="col-lg-12 report-info-box" style="height: 450px;">
+            <div class="col-lg-12 report-info-box" style="height: 450px;">
                 <div class="heading">Business Check Ins By Day</div>
                 <div class="bar-chart">
                     {{ day_div | safe }}

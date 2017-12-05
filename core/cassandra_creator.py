@@ -10,7 +10,9 @@ from yelp_spark.settings import CASSANDRA_SERVERS, \
     YELP_USERS,\
     NAMES_GENDER, \
     BUSINESS_CITY, \
-    BUSINESS_SENTIMENTS
+    BUSINESS_SENTIMENTS, \
+    POSITIVE_WORDS,\
+    NEGATIVE_WORDS
 
 
 
@@ -105,13 +107,20 @@ class CassandraCreator(object):
                       business_id TEXT,
                       tip LIST<text>,
                       avg_sentiments FLOAT,
+                      pos_words LIST<text>,
+                      neg_words LIST<text>,
                       PRIMARY KEY(business_id)
                     )
 
     """
 
-
-
+    SENTIMENT_WORDS = """
+                    CREATE TABLE IF NOT EXISTS %s (
+                      word TEXT,
+                      sentiment INT,
+                      PRIMARY KEY (word)
+                    )
+    """
 
     @classmethod
     def create_key_space(cls):
@@ -127,5 +136,9 @@ class CassandraCreator(object):
         session.execute(cls.YELP_USER_TABLE % YELP_USERS)
         session.execute(cls.NAME_GENDER % NAMES_GENDER)
         session.execute(cls.BUSINESS_CITY % BUSINESS_CITY)
-        session.execute(cls.BUSINESS_SENTIMENTS_TABLE %BUSINESS_SENTIMENTS)
+        session.execute(cls.BUSINESS_SENTIMENTS_TABLE % BUSINESS_SENTIMENTS)
+        session.execute(cls.SENTIMENT_WORDS % POSITIVE_WORDS)
+        session.execute(cls.SENTIMENT_WORDS % NEGATIVE_WORDS)
+
+
 

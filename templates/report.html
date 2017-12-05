@@ -2,14 +2,38 @@
 {% block content %}
     <div class="main_container col-lg-12">
         <div class="row report">
+            <div class="col-lg-12">
+                <h1 style="color:#f0f0f0">Your New Business Report</h1>
+            </div>
             <div class="col-lg-12 report-info-box">
                 <div class="heading">Your Future Competitors on Map</div>
+                {{ map.html | safe }}
             </div>
             <div class="col-lg-12 report-info-box">
-                <div class="heading">Top Five Competitors</div>
+                <div class="heading">Top Competitors</div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Business Name</th>
+                        <th>Distance (kms)</th>
+                        <th>Reviews</th>
+                        <th>Ratings</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for bus in top_5 %}
+                        <tr>
+                            <td>{{ bus['name'] }}</td>
+                            <td>{{'%0.2f' | format(bus['distance']|float) }}</td>
+                            <td>{{ bus['review_count'] }}</td>
+                            <td>{{ bus['stars'] }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
             </div>
-             <div class="col-lg-12 report-info-box" style="height: 450px;">
+            <div class="col-lg-12 report-info-box" style="height: 450px;">
                 <div class="heading">Business Check Ins By Day</div>
                 <div class="bar-chart">
                     {{ day_div | safe }}
@@ -36,6 +60,7 @@
 {% block extraScript %}
     {{ day_script|safe }}
     {{ hour_script|safe }}
+    {{ map.js|safe }}
     <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
     <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
 {% endblock %}

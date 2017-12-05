@@ -10,7 +10,8 @@ NAMES_GENDER = 'name_gender'
 BUSINESS_CITY = 'business_info_table'
 BUSINESS_SENTIMENTS = 'business_sentiments'
 
-
+POSITIVE_WORDS = 'positive_words'
+NEGATIVE_WORDS = 'negative_words'
 
 # Number of workers
 WORKERS = 4
