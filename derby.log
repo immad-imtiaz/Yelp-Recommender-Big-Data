@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Tue Dec 05 04:45:50 PST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0160-26b6-0001-00000703a960 
+on database directory /home/iimtiaz/Programming/Yelp-Recommender-Big-Data/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@6e274912 
+Loaded from file:/usr/lib/spark/spark-2.2.0-bin-hadoop2.7/jars/derby-10.12.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_151-8u151-b12-0ubuntu0.16.04.2-b12
+user.dir=/home/iimtiaz/Programming/Yelp-Recommender-Big-Data
+os.name=Linux
+os.arch=amd64
+os.version=4.10.0-40-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

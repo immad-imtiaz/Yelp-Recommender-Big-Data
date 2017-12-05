@@ -9,9 +9,8 @@
           href= "{{ url_for('bower.static',filename='bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css') }}">
     <link rel= "stylesheet" type= "text/css"
           href= "{{ url_for('bower.static',filename='rangeslider.js/dist/rangeslider.css') }}">
-    <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css" rel="stylesheet">
-    <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" rel="stylesheet">
-    <link href=
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
 
 
 
@@ -33,8 +32,6 @@
 <script src="{{ url_for('bower.static', filename='typeahead.js/dist/typeahead.jquery.min.js') }}"></script>
 <script src="{{ url_for('bower.static', filename='typeahead.js/dist/typeahead.bundle.min.js') }}"></script>
 <script src="{{ url_for('bower.static', filename='typeahead.js/dist/bloodhound.min.js') }}"></script>
-<script src="{{ url_for('bower.static', filename='js-marker-clusterer/src/markerclusterer.js') }}"></script>
-
 {% block extraScript %}
 {% endblock %}
 

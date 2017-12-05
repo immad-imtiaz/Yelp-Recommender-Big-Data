@@ -1,7 +1,8 @@
 from pyspark import SparkConf, SparkContext
 from pyspark.sql.functions import udf
 import uuid
-from pyspark.sql import SQLContext, types
+from pyspark.sql import SQLContext, types, Row
+from collections import OrderedDict
 from pyspark.sql.types import *
 try:
     from settings import CASSANDRA_SERVERS, DATA_SET_INPUT_DIRECTORY, CASSANDRA_KEY_SPACE, WORKERS
@@ -41,6 +42,10 @@ class SparkBase(object):
             load(keyspace=k_space, table=table)
         df.createOrReplaceTempView(table)
         return df
+
+    @staticmethod
+    def convert_to_row(d: dict) -> Row:
+        return Row(**OrderedDict(sorted(d.items())))
 
     @staticmethod
     def save_data_frame_to_cassandra(data_frame, table):

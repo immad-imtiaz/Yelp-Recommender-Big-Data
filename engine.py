@@ -1,16 +1,5 @@
-import re
-from pyspark.mllib.recommendation import ALS
 from yelp_spark.spark_base import SparkBase
 from yelp_spark.settings import *
-from bokeh.models import (HoverTool, FactorRange, Plot, LinearAxis, Grid,
-                          Range1d)
-from bokeh.models.glyphs import VBar
-from bokeh.plotting import figure
-from bokeh.charts import Bar
-
-from bokeh.palettes import Spectral6
-from bokeh.embed import components
-from bokeh.models.sources import ColumnDataSource
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -40,11 +29,14 @@ class YelpRecommenderEngine(SparkBase):
                                                                  'latitude', 'longitude', 'stars', 'review_count')
         all_business_ids = all_business_in_range.select('business_id')
         all_business_ids.cache()
-        day_script, day_div = self._get_day_wise_check_in_report(all_business_ids)
-        hour_script, hour_div = self._get_hourly_check_in_report(all_business_ids)
-        top_5_competitors = all_business_in_range_map.orderBy("stars", ascending=False).collect()
+        day_wise = self._get_day_wise_check_in_report(all_business_ids)
+        hour_wise = self._get_hourly_check_in_report(all_business_ids)
+        top_competitors = all_business_in_range_map.orderBy("stars", ascending=False).take(5)
         all_business_in_range_map = all_business_in_range_map.collect()
-        return day_script, day_div, hour_script, hour_div, all_business_in_range_map, top_5_competitors
+        pos_words = self._get_pos_words(all_business_ids)
+        neg_words = self._get_neg_words(all_business_ids)
+        return day_wise, hour_wise, all_business_in_range_map, top_competitors, \
+            neg_words, pos_words
 
     def _get_business_with_in_radius(self, categories, lon, lat, kms):
         self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_CITY)
@@ -76,8 +68,23 @@ class YelpRecommenderEngine(SparkBase):
 
         return all_business
 
-    def _get_business_positive_negative_keywords(self, business_id_rdd):
-        pass
+
+
+    def _get_pos_words(self, business_id_list):
+        data_frame = self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_SENTIMENTS)
+        words = data_frame.join(business_id_list, business_id_list.business_id == data_frame.business_id, 'inner') \
+            .select('pos_words')
+        words = words.rdd.flatMap(lambda x: x['pos_words']).map(lambda x: (x, 1))
+        words = words.reduceByKey(lambda x, y: x + y)
+        return words.map(lambda x: {'text': x[0], 'size': x[1]}).collect()
+
+    def _get_neg_words(self, business_id_list):
+        data_frame = self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_SENTIMENTS)
+        words = data_frame.join(business_id_list, business_id_list.business_id == data_frame.business_id, 'inner') \
+            .select('neg_words')
+        words = words.rdd.flatMap(lambda x: x['neg_words']).map(lambda x: (x, 1))
+        words = words.reduceByKey(lambda x, y: x + y)
+        return words.map(lambda x: {'text': x[0], 'size': x[1]}).collect()
 
     def _get_day_wise_check_in_report(self, business_id_rdd):
         business_id_rdd.createOrReplaceTempView('business_ids')
@@ -98,27 +105,23 @@ class YelpRecommenderEngine(SparkBase):
         }
 
         def transform(x):
-            return days_sorting[x['day']], ([x['day']], [x['b_check_ins']])
+            return days_sorting[x['day']], (x['day'], x['b_check_ins'])
 
-        def transform2(x, y):
-            return x[0]+y[0], x[1]+y[1]
+        def transform2(x):
+            return {
+                'day': x[1][0],
+                'check_ins': x[1][1],
+                'color': COLORS[x[0]]
+            }
 
         df_check_in = df_check_in.rdd\
             .map(transform)\
             .sortByKey(lambda x: x[0])\
-            .map(lambda x: x[1])\
-            .reduce(transform2)
+            .map(transform2)
 
-        graph_data = {
-            'day': df_check_in[0][:7],
-            'check_in': df_check_in[1][:7],
-            'color': Spectral6
-        }
+        return df_check_in.collect()
 
-        plot = self._create_bar_chart(graph_data, 'Competitors Day Wise Check Ins', 'day',
-                                      'check_in', 'Week Days', 'Average Check Ins')
-        script, div = components(plot)
-        return script, div
+
 
     def _get_hourly_check_in_report(self, business_id_rdd):
         business_id_rdd.createOrReplaceTempView('business_ids')
@@ -130,84 +133,20 @@ class YelpRecommenderEngine(SparkBase):
                                     GROUP BY check_in.day_hour""" % BUSINESS_TIME_CHECK_INS)
 
         def transform(x):
-            return int(x['hour'].split(':')[0]), ([int(x['hour'].split(':')[0])], [x['b_check_ins']])
+            return int(x['hour'].split(':')[0]), (x['hour'], x['b_check_ins'])
 
-        def transform2(x, y):
-            return 0, (x[1][0] + y[1][0], x[1][1]+y[1][1])
+        def transform2(x):
+            return {
+                'hour': x[1][0],
+                'check_ins': x[1][1],
+                'color': COLORS[x[0]]
+            }
 
         df_check_in = df_check_in.rdd \
             .map(transform) \
             .sortByKey() \
-            .reduce(transform2)
-
-        graph_data = {
-            'hour': df_check_in[1][0] if (df_check_in[1][0] != 0) else 24,
-            'check_in': df_check_in[1][1],
-            'color': Spectral6
-        }
-
-        plot = self._create_bar_chart(graph_data, 'Competitors Hour Wise Check Ins', 'hour',
-                                      'check_in', 'Daily Hours', 'Average Check Ins')
-        script, div = components(plot)
-        return script, div
-
-    def _get_business_categories(self, business_id_rdd):
-        pass
-
-    def create_hover_tool(self):
-        """Generates the HTML for the Bokeh's hover data tool on our graph."""
-        hover_html = """
-          <div>
-            <span class="hover-tooltip">$x</span>
-          </div>
-          <div>
-            <span class="hover-tooltip">@bugs bugs</span>
-          </div>
-          <div>
-            <span class="hover-tooltip">$@costs{0.00}</span>
-          </div>
-        """
-        return HoverTool(tooltips=hover_html)
-
-    def _create_bar_chart(self, data, title, x_name, y_name, x_label, y_label, hover_tool=None,
-                         width=1200, height=400):
-        """Creates a bar chart plot with the exact styling for the centcom
-           dashboard. Pass in data as a dictionary, desired plot title,
-           name of x axis, y axis and the hover tool HTML.
-        """
-        source = ColumnDataSource(data)
-        xdr = FactorRange(factors=data[x_name])
-        ydr = Range1d(start=0, end=max(data[y_name]) * 1.5)
-
-        tools = []
-        if hover_tool:
-            tools = [hover_tool, ]
-
-        plot = figure(title=title, x_range=xdr, y_range=ydr, plot_width=width,
-                      plot_height=height, h_symmetry=False, v_symmetry=False,
-                      min_border=0, toolbar_location="above", tools=tools,
-                      responsive=True, outline_line_color="#666666")
-
-        glyph = VBar(x=x_name, top=y_name, bottom=0, width=.4,
-                     fill_color="#f38c59")
-        plot.add_glyph(source, glyph)
-
-        xaxis = LinearAxis()
-        yaxis = LinearAxis()
-
-        plot.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
-        plot.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
-        plot.toolbar.logo = None
-        plot.min_border_top = 0
-        plot.xgrid.grid_line_color = None
-        plot.ygrid.grid_line_color = "#999999"
-        plot.yaxis.axis_label = y_label
-        plot.ygrid.grid_line_alpha = 0.1
-        plot.background_fill_alpha = 0
-        # plot.border_fill_color = 'transparent'
-        plot.xaxis.axis_label = x_label
-        plot.xaxis.major_label_orientation = 1
-        return plot
+            .map(transform2)
+        return df_check_in.collect()
 
 
 

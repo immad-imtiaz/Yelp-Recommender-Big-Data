@@ -35,21 +35,21 @@
             </div>
             <div class="col-lg-12 report-info-box" style="height: 450px;">
                 <div class="heading">Business Check Ins By Day</div>
-                <div class="bar-chart">
-                    {{ day_div | safe }}
+                <div class="bar-chart" id="chartdiv">
                 </div>
             </div>
             <div class="col-lg-12 report-info-box" style="height: 450px;">
                 <div class="heading">Business Check In By Hour</div>
-                <div class="bar-chart">
-                    {{ hour_div | safe }}
+                <div class="bar-chart" id="hour_chart">
                 </div>
             </div>
             <div class="col-lg-12 report-info-box">
                 <div class="heading">Positive Keywords In User Reviews</div>
+                <div id='positiveWordCloud'></div>
             </div>
             <div class="col-lg-12 report-info-box">
                 <div class="heading">Negative Keywords In User Reviews</div>
+                <div id='negativeWordCloud'></div>
             </div>
 
         </div>
@@ -58,9 +58,94 @@
 
 
 {% block extraScript %}
-    {{ day_script|safe }}
-    {{ hour_script|safe }}
+    <script src="{{ url_for('bower.static', filename='js-marker-clusterer/src/markerclusterer.js') }}"></script>
+    <script src="{{ url_for('static',filename='scripts/lib/d3/d3.js') }}"></script>
+    <script src="{{ url_for('static',filename='scripts/lib/d3/d3.layout.cloud.js') }}"></script>
+    <script src="{{ url_for('static',filename='scripts/d3.wordcloud.js') }}"></script>
+    <script src="{{ url_for('bower.static', filename='amcharts3/amcharts/amcharts.js') }}"></script>
+    <script src="{{ url_for('bower.static', filename='amcharts3/amcharts/serial.js') }}"></script>
+    <script src="{{ url_for('bower.static', filename='amcharts3/amcharts/plugins/export/export.min.js') }}"></script>
+    <script src="{{ url_for('bower.static', filename='amcharts3/amcharts/themes/dark.js') }}"></script>
     {{ map.js|safe }}
-    <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
-    <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
+    <script>
+        var pos_word = {{ pos_word |tojson|safe }};
+        var neg_word = {{ neg_word|tojson|safe  }};
+        var hour_data = {{ hour_wise |tojson|safe }};
+        var day_data = {{ day_wise |tojson|safe }};
+        d3.wordcloud()
+                .size([800, 400])
+                .selector('#positiveWordCloud')
+                .words(pos_word)
+                .start();
+
+        d3.wordcloud()
+                .size([800, 400])
+                .selector('#negativeWordCloud')
+                .words(neg_word)
+                .start();
+
+
+        var day_chart = AmCharts.makeChart("chartdiv", {
+            "type": "serial",
+            "theme": "dark",
+            "marginRight": 70,
+            "dataProvider": day_data,
+            "startDuration": 1,
+            "graphs": [{
+                "balloonText": "<b>[[category]]: [[value]]</b>",
+                "fillColorsField": "color",
+                "fillAlphas": 0.9,
+                "lineAlpha": 0.2,
+                "type": "column",
+                "valueField": "check_ins"
+            }],
+            "chartCursor": {
+                "categoryBalloonEnabled": false,
+                "cursorAlpha": 0,
+                "zoomable": false
+            },
+            "categoryField": "day",
+            "categoryAxis": {
+                "gridPosition": "start",
+                "labelRotation": 45
+            },
+            "export": {
+                "enabled": true
+            }
+
+        });
+
+
+
+        var hour_chart = AmCharts.makeChart("hour_chart", {
+            "type": "serial",
+            "theme": "dark",
+            "marginRight": 70,
+            "dataProvider": hour_data,
+            "startDuration": 1,
+            "graphs": [{
+                "balloonText": "<b>[[category]]: [[value]]</b>",
+                "fillColorsField": "color",
+                "fillAlphas": 0.9,
+                "lineAlpha": 0.2,
+                "type": "column",
+                "valueField": "check_ins"
+            }],
+            "chartCursor": {
+                "categoryBalloonEnabled": false,
+                "cursorAlpha": 0,
+                "zoomable": false
+            },
+            "categoryField": "hour",
+            "categoryAxis": {
+                "gridPosition": "start",
+                "labelRotation": 45
+            },
+            "export": {
+                "enabled": true
+            }
+
+        });
+
+    </script>
 {% endblock %}

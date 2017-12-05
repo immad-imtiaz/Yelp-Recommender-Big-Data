@@ -4,3 +4,4 @@ _yelp_recommender/
 .idea/
 *.py.save
 .egg
+yelp_spark/settings.py

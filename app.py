@@ -7,8 +7,6 @@ from flask_googlemaps import GoogleMaps
 
 
 main = Blueprint('main', __name__)
-
-import json
 from engine import YelpRecommenderEngine
 
 import logging
@@ -44,8 +42,8 @@ def get_report():
     lat = float(data['lat'])
     kms = data['kms']
     categories = data['categories'].split(',')
-    day_script, day_div, hour_script, hour_div, map_business, top_5 = recommendation_engine.get_business_report(categories,
-                                                                                                         lng, lat, kms)
+    day_wise, hour_wise, map_business, top_5, neg_word, \
+        pos_word = recommendation_engine.get_business_report(categories, lng, lat, kms)
 
     markers = []
     for bus in map_business:
@@ -78,12 +76,13 @@ def get_report():
         style="height:500px;margin:0;"
 
     )
+    print('-------------Done---------------')
     return render_template('report.html',
                            map=map,
-                           day_script=day_script,
-                           day_div=day_div,
-                           hour_script=hour_script,
-                           hour_div=hour_div,
+                           pos_word=pos_word,
+                           neg_word=neg_word,
+                           day_wise=day_wise,
+                           hour_wise=hour_wise,
                            top_5=top_5,
                            title='New Business Report')
 

@@ -7,7 +7,7 @@ import numpy as np
 import sys, re, string
 from settings import BUSINESS_CITY, CASSANDRA_KEY_SPACE, BUSINESS_SENTIMENTS, POSITIVE_WORDS, NEGATIVE_WORDS
 from pyspark.sql import functions
-from wordcloud import WordCloud
+
 
 engStopWords = stopwords.words('english')
 
@@ -101,39 +101,21 @@ class YelpBusinessSentiments(SparkBase):
 
         self.save_data_frame_to_cassandra(businessSentimentToCassandra, BUSINESS_SENTIMENTS)
 
-    def give_pos_words(self, business_id_list):
-        data_frame = self.df_for(CASSANDRA_KEY_SPACE, POSITIVE_WORDS)
-        # number of business_id
-        posWords = []
-        y = data_frame.filter(data_frame.business_id == '').select('pos_words')
-        listLen = len(business_id_list)
-        for busid in business_id_list:
-            x = data_frame.filter(data_frame.business_id == busid).select('pos_words')
-            y = y.union(x)
-        ylist = y.collect()
-        for i in range(listLen):
-            if isinstance(ylist[i]['pos_words'], list):
-                posWords = posWords + ylist[i]['pos_words']
-        return posWords
-        # input1: business_id_list = ['--9e1ONYQuAa-CB_Rrw7Tw', 'fzQdcOOxJTEQVdM5G1WHzg', '7q3EukNc4COYCvgf3h-yeA']
-        # input2: data_frame = dataframe that has the negative sentiment word list
-        # returns: list of all the negative words for all of the businesses
+    def _get_pos_words(self, business_id_list):
+        data_frame = self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_SENTIMENTS)
+        words = data_frame.join(business_id_list, business_id_list.business_id == data_frame.business_id, 'inner') \
+            .select('pos_words')
+        words = words.rdd.flatMap(lambda x: x['pos_words']).map(lambda x: (x, 1))
+        words = words.reduceByKey(lambda x, y: x + y)
+        return words.map(lambda x: {'text': x[0], 'size': x[1]}).collect()
 
-
-    def give_neg_words(self, business_id_list):
-        data_frame = self.df_for(CASSANDRA_KEY_SPACE, NEGATIVE_WORDS)
-        negWords = []
-        y = data_frame.filter(data_frame.business_id == '').select('neg_words')
-        # number of business_id
-        listLen = len(business_id_list)
-        for busid in business_id_list:
-            x = data_frame.filter(data_frame.business_id == busid).select('neg_words')
-            y = y.union(x)
-        ylist = y.collect()
-        for i in range(listLen):
-            if isinstance(ylist[i]['neg_words'], list):
-                negWords = negWords + ylist[i]['neg_words']
-        return negWords
+    def _get_neg_words(self, business_id_list):
+        data_frame = self.df_for(CASSANDRA_KEY_SPACE, BUSINESS_SENTIMENTS)
+        words = data_frame.join(business_id_list, business_id_list.business_id == data_frame.business_id, 'inner') \
+            .select('neg_words')
+        words = words.rdd.flatMap(lambda x: x['neg_words']).map(lambda x: (x, 1))
+        words = words.reduceByKey(lambda x, y: x + y)
+        return words.map(lambda x: {'text': x[0], 'size': x[1]}).collect()
 
     def save_sentiments_words(self, positive=True):
         schema = StructType([
@@ -166,7 +148,14 @@ class YelpBusinessSentiments(SparkBase):
 
 
 ys = YelpBusinessSentiments()
-ys.save_sentiments_words(positive=True)
-ys.save_sentiments_words(positive=False)
-ys.save_other_sentiment_words()
-ys.save_business_sentiment()
+# ys.save_sentiments_words(positive=True)
+# ys.save_sentiments_words(positive=False)
+# ys.save_other_sentiment_words()
+# ys.save_business_sentiment()
+
+business_id_list = ys.spark.parallelize(['--9e1ONYQuAa-CB_Rrw7Tw', 'fzQdcOOxJTEQVdM5G1WHzg', '7q3EukNc4COYCvgf3h-yeA'])\
+    .map(lambda x: {'business_id': str(x)})
+
+schema = StructType([StructField('business_id', StringType(), True)])
+business_id_list = ys.sql_ctx.createDataFrame(business_id_list, schema)
+print(ys._get_neg_words(business_id_list))
