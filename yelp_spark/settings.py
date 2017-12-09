@@ -19,17 +19,17 @@ WORKERS = 4
 #HDFS INPUT DIRECTORY
 DATA_SET_INPUT_DIRECTORY = 'dataset/'
 
-# Cassandra Config
-CASSANDRA_SERVERS = ['127.0.0.1']
-CASSANDRA_KEY_SPACE = 'yelp_recommender'
+# # Cassandra Config
+# CASSANDRA_SERVERS = ['127.0.0.1']
+# CASSANDRA_KEY_SPACE = 'yelp_recommender'
 
 
 # #HDFS INPUT DIRECTORY
 # DATA_SET_INPUT_DIRECTORY = 'yelp/dataset/'
 #
 # # Cassandra Config
-# CASSANDRA_SERVERS = ['199.60.17.171', '199.60.17.188']
-# CASSANDRA_KEY_SPACE = 'yelp_recommender'
+CASSANDRA_SERVERS = ['199.60.17.171', '199.60.17.188']
+CASSANDRA_KEY_SPACE = 'yelp_recommender'
 
 
 JACCARD_SIMILARITY_THRESHOLD = 0.5
