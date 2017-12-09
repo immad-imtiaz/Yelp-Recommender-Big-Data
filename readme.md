@@ -1,7 +1,5 @@
-# Project Title
-
-Yelp New Business Helper
-Big Data Project
+# Yelp New Business Helper - Big Data Miners
+Team: Ravi Bisla, Immad Imtiaz, Sharif-ul-Islam
 
 
 ## Getting Started
@@ -12,7 +10,7 @@ In this project we build a web-based business analytics solution  that helps new
 ### What are the similar businesses (competitors) around the area we want to open our new business? 
 Helps to decide whether the place we have chosen for our new business is good or not or whether the vicinity of this place is already saturated with similar businesses.
 
-###How these future competitors are performing? 
+### How these future competitors are performing? 
 This helps to analyze whether the nature of business we want to open would be successful at the location we have chosen or not.
 
 ### What is the expected customer traffic on each day of peak and each hour of day? 
@@ -29,16 +27,17 @@ What the users are thinking about a particular business is very important. A bus
 
 1) Clone the reporsitory on the cluster and create a virtual environment for the project. (On the cluster because the precomputed data is on cassandra on the cluster)
 
-2) Activate virtual environment
+2) In yelp_spark/settings.py change the cassandra cluster to CASSANDRA_SERVERS = ['199.60.17.171', '199.60.17.188']
 
-2) Run the engine
+3) Activate virtual environment
+
+4) Run the engine
 spark-submit --packages anguenot:pyspark-cassandra:0.6.0 server.py
 
-3) On your local for tunnelling
+5) On your local for tunnelling
 ssh -L 5432:gateway.sfucloud.ca:5432 iimtiaz@gateway.sfucloud.ca -N
 
-4) On your brower you can access the application entering localhost:5432
-
+6) On your brower you can access the application entering localhost:5432
 
 
 
